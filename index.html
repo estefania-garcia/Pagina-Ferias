@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferta Académica Uniandes</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --uniandes-blue: #002f56;
+            --uniandes-yellow: #ffcd00;
+            --light-blue: #eef4f9;
+            --text-main: #333333;
+            --border-color: #d1d8e0;
+        }
+
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #ffffff; color: var(--text-main); margin: 0; padding: 0; }
+
+        header { padding: 40px 20px; background-color: var(--uniandes-blue); color: white; text-align: center; }
+        header h1 { margin: 0; font-size: 2.2rem; }
+
+        .top-nav {
+            background-color: var(--light-blue);
+            padding: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Alinea verticalmente el icono */
+            gap: 12px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-nav {
+            background-color: white;
+            color: var(--uniandes-blue);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 1px solid var(--uniandes-blue);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-nav:hover { background-color: var(--uniandes-blue); color: white; }
+        .btn-nav.highlight { background-color: var(--uniandes-yellow); border-color: var(--uniandes-yellow); color: var(--uniandes-blue); }
+
+        /* --- ESTILO DEL ICONO PEQUEÑO --- */
+        .btn-info-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1.5px solid var(--uniandes-blue);
+            background: transparent;
+            color: var(--uniandes-blue);
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .btn-info-icon:hover {
+            background-color: var(--uniandes-blue);
+            color: white;
+        }
+
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+
+        /* Acordeón y Grilla */
+        .area-wrapper { border-bottom: 1px solid var(--border-color); margin-bottom: 5px; }
+        .area-header { width: 100%; padding: 25px 15px; background: none; border: none; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .area-header h2 { margin: 0; font-size: 1.3rem; color: var(--uniandes-blue); font-weight: bold; }
+
+        .carreras-grid { display: none; padding: 20px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; background-color: #fafafa; }
+        .active + .carreras-grid { display: grid; }
+
+        .carrera-item { padding: 15px; background: white; border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer; color: var(--uniandes-blue); transition: 0.2s; font-weight: 500; }
+        .carrera-item:hover { background-color: var(--uniandes-blue); color: white; transform: translateY(-2px); }
+
+        /* Modales */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 47, 86, 0.6); backdrop-filter: blur(4px); overflow-y: auto; }
+        .modal-body { background: white; margin: 2% auto; padding: 40px; width: 90%; max-width: 600px; border-radius: 12px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .close-btn { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #999; }
+
+        .info-tag { font-size: 0.75rem; font-weight: bold; color: #007bff; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .info-val { margin-bottom: 20px; line-height: 1.6; }
+        .price { font-size: 1.8rem; color: var(--uniandes-blue); font-weight: bold; margin: 10px 0; }
+
+        .becas-box { background-color: #fff9e6; border-left: 5px solid var(--uniandes-yellow); padding: 15px; margin-top: 20px; border-radius: 4px; }
+        .btn-contacto { display: block; text-align: center; background-color: var(--uniandes-blue); color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 25px; transition: 0.3s; }
+
+        /* Estilos del popup de becas */
+        .beca-tipo-card { padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
+        .socio { border-left: 5px solid #007bff; background-color: #f8fbff; }
+        .merito { border-left: 5px solid #4caf50; background-color: #f9fff9; }
+
+        .icon-arrow { transition: transform 0.3s; }
+        .active .icon-arrow { transform: rotate(180deg); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Guía Apoyo Ferias Uniandes</h1>
+    </header>
+
+    <nav class="top-nav">
+        <a href="https://aspirantes.uniandes.edu.co/es/pregrado/servicios-financieros" target="_blank" class="btn-nav">💰 Apoyo Financiero</a>
+        
+        <button onclick="openBecasPopup()" class="btn-info-icon" title="Información de tipos de becas">!</button>
+        
+        <a href="https://aspirantes.uniandes.edu.co/es/pregrado/proceso-admision#anclamodalidades" target="_blank" class="btn-nav highlight">📝 Modalidades de Admisión</a>
+        <a href="https://aspirantes.uniandes.edu.co/es/eventos/programate-con-tu-programa" target="_blank" class="btn-nav">🏫 Prográmate</a>
+    </nav>
+
+    <div class="container" id="acordeon-carreras"></div>
+
+    <div id="modalCarrera" class="modal">
+        <div class="modal-body">
+            <span class="close-btn" onclick="closeModal('modalCarrera')">&times;</span>
+            <h2 id="title" style="color: var(--uniandes-blue); margin: 0 0 20px 0; font-size: 2rem;"></h2>
+            <span class="info-tag">Descripción</span>
+            <p id="desc" class="info-val"></p>
+            <span class="info-tag">Enfoque Académico</span>
+            <p id="enfoque" class="info-val"></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <span class="info-tag">Duración</span>
+                    <p id="semestres" class="info-val"></p>
+                </div>
+                <div>
+                    <span class="info-tag">Puntaje ICFES (Ref)</span>
+                    <p id="puntaje" class="info-val"></p>
+                </div>
+            </div>
+            <span class="info-tag">Valor Semestre (2024)</span>
+            <p id="precio" class="price"></p>
+            <div id="section-becas" class="becas-box" style="display:none;">
+                <span class="info-tag" style="color: #856404;">Opciones de Apoyo Financiero</span>
+                <p id="becas" style="margin: 5px 0 0 0; font-size: 0.95rem;"></p>
+            </div>
+            <a id="linkPensum" href="#" target="_blank" class="btn-contacto">Ver Pensum</a>
+        </div>
+    </div>
+
+   <div id="modalBecasInfo" class="modal">
+        <div class="modal-body">
+            <span class="close-btn" onclick="closeModal('modalBecasInfo')">&times;</span>
+            <h2 style="color: var(--uniandes-blue); margin-bottom: 20px;">Tipos de Becas en Uniandes</h2>
+            
+            <div class="beca-tipo-card socio">
+                <h3 style="margin-top: 0; color: #0056b3;">📍 Becas Socioeconómicas</h3>
+                <p style="font-size: 0.9rem;">Dirigidas a estudiantes de <b>bajos recursos</b> (estratos 1, 2 y 3) con excelente desempeño académico.</p>
+                <ul style="font-size: 0.85rem;">
+                    <li><b>Quiero Estudiar:</b> Cubre hasta el 95% de la matrícula.</li>
+                    <li><b>Quiero Enseñar:</b> 95% matrícula (Licenciaturas).</li>
+                    <li><b>Pa'lante:</b> Apoyos regionales específicos. Cubre hasta el 98%.</li>
+                    <li><b>Preferente:</b> Para ciertos programas cubre del 5% al 50% del valor.</li>
+                    <li><b>Yerly:</b> Estudiantes de Matemáticas con excelencia académica. No es 100%.</li>
+                    <li><b>Préstamo Progresandes:</b> Financia hasta 75%.</li>
+                </ul>
+            </div>
+
+            <div class="beca-tipo-card merito">
+                <h3 style="margin-top: 0; color: #2e7d32;">🏆 Becas de Excelencia / Mérito</h3>
+                <p style="font-size: 0.9rem;">Se otorgan por <b>mérito puro o vocación</b>. No requieren demostrar necesidad económica.</p>
+                <ul style="font-size: 0.85rem;">
+                    <li><b>Decidí Enseñar:</b> 66% de la matrícula (Licenciaturas).</li>
+                    <li><b>Premios de Facultad:</b> Por promedios destacados durante la carrera.</li>
+                    <li><b>Descuento Hermanos</b></li>
+                    <li><b>Estudiantes Hijos de Empleados:</b> Exoneración total o parcial para hijos de profesores y empleados a tiempo completo.</li>
+                </ul>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: #666; text-align: center;">*Para todas las becas es requisito ser admitido primero a la Universidad.</p>
+        </div>
+    </div>
+
+    <script>
+        const formatMoney = (num) => {
+            if(!num || isNaN(num)) return num || "Consultar";
+            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(num);
+        };
+
+        async function loadExcel() {
+            try {
+                const res = await fetch('carreras.xlsx');
+                const buf = await res.arrayBuffer();
+                const wb = XLSX.read(buf, { type: 'array' });
+                const data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                const grouped = data.reduce((acc, curr) => {
+                    const area = curr.area || "Otras Áreas";
+                    (acc[area] = acc[area] || []).push(curr);
+                    return acc;
+                }, {});
+                render(grouped);
+            } catch (e) { console.error("Error al cargar el Excel", e); }
+        }
+
+        function render(grouped) {
+            const container = document.getElementById('acordeon-carreras');
+            container.innerHTML = ""; 
+            for (const area in grouped) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'area-wrapper';
+                wrapper.innerHTML = `<button class="area-header" onclick="toggleArea(this)"><h2>${area}</h2><span class="icon-arrow">▼</span></button><div class="carreras-grid"></div>`;
+                const grid = wrapper.querySelector('.carreras-grid');
+                grouped[area].forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'carrera-item';
+                    item.innerText = c.titulo;
+                    item.onclick = () => openModal(c);
+                    grid.appendChild(item);
+                });
+                container.appendChild(wrapper);
+            }
+        }
+
+        function toggleArea(btn) { btn.classList.toggle('active'); }
+
+        function openModal(c) {
+            document.getElementById('title').innerText = c.titulo;
+            document.getElementById('desc').innerText = c.descripcion;
+            document.getElementById('enfoque').innerText = c.enfoque;
+            document.getElementById('semestres').innerText = c.titulo.includes("Dirigidos") ? "Máximo 2 Semestres" : c.semestres + " Semestres";
+            document.getElementById('puntaje').innerText = c.puntaje || 'Variable';
+            document.getElementById('precio').innerText = formatMoney(c.precio);
+            document.getElementById('linkPensum').href = c.link_contacto || "#"; 
+            const bBox = document.getElementById('section-becas');
+            if(c.becas) {
+                document.getElementById('becas').innerText = c.becas;
+                bBox.style.display = 'block';
+            } else { bBox.style.display = 'none'; }
+            document.getElementById('modalCarrera').style.display = 'block';
+        }
+
+        function openBecasPopup() { document.getElementById('modalBecasInfo').style.display = 'block'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        window.onclick = (e) => { if(e.target.className === 'modal') e.target.style.display = 'none'; }
+        loadExcel();
+    </script>
+</body>
+</html>
