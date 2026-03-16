@@ -24,7 +24,7 @@
             padding: 15px 0;
             display: flex;
             justify-content: center;
-            align-items: center; /* Alinea verticalmente el icono */
+            align-items: center;
             gap: 12px;
             flex-wrap: wrap;
             position: sticky;
@@ -49,33 +49,18 @@
         .btn-nav:hover { background-color: var(--uniandes-blue); color: white; }
         .btn-nav.highlight { background-color: var(--uniandes-yellow); border-color: var(--uniandes-yellow); color: var(--uniandes-blue); }
 
-        /* --- ESTILO DEL ICONO PEQUEÑO --- */
         .btn-info-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 1.5px solid var(--uniandes-blue);
-            background: transparent;
-            color: var(--uniandes-blue);
-            font-weight: bold;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 0;
-            transition: 0.2s;
-            line-height: 1;
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 1.5px solid var(--uniandes-blue); background: transparent;
+            color: var(--uniandes-blue); font-weight: bold; font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; padding: 0; transition: 0.2s; line-height: 1;
         }
 
-        .btn-info-icon:hover {
-            background-color: var(--uniandes-blue);
-            color: white;
-        }
+        .btn-info-icon:hover { background-color: var(--uniandes-blue); color: white; }
 
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
 
-        /* Acordeón y Grilla */
         .area-wrapper { border-bottom: 1px solid var(--border-color); margin-bottom: 5px; }
         .area-header { width: 100%; padding: 25px 15px; background: none; border: none; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .area-header h2 { margin: 0; font-size: 1.3rem; color: var(--uniandes-blue); font-weight: bold; }
@@ -95,10 +80,12 @@
         .info-val { margin-bottom: 20px; line-height: 1.6; }
         .price { font-size: 1.8rem; color: var(--uniandes-blue); font-weight: bold; margin: 10px 0; }
 
-        .becas-box { background-color: #fff9e6; border-left: 5px solid var(--uniandes-yellow); padding: 15px; margin-top: 20px; border-radius: 4px; }
+        /* Cajas de Información Especial */
+        .becas-box { background-color: #fff9e6; border-left: 5px solid var(--uniandes-yellow); padding: 15px; margin-top: 15px; border-radius: 4px; }
+        .faq-box { background-color: #f0f7ff; border-left: 5px solid #007bff; padding: 15px; margin-top: 15px; border-radius: 4px; }
+        
         .btn-contacto { display: block; text-align: center; background-color: var(--uniandes-blue); color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 25px; transition: 0.3s; }
 
-        /* Estilos del popup de becas */
         .beca-tipo-card { padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .socio { border-left: 5px solid #007bff; background-color: #f8fbff; }
         .merito { border-left: 5px solid #4caf50; background-color: #f9fff9; }
@@ -115,9 +102,7 @@
 
     <nav class="top-nav">
         <a href="https://aspirantes.uniandes.edu.co/es/pregrado/servicios-financieros" target="_blank" class="btn-nav">💰 Apoyo Financiero</a>
-        
         <button onclick="openBecasPopup()" class="btn-info-icon" title="Información de tipos de becas">!</button>
-        
         <a href="https://aspirantes.uniandes.edu.co/es/pregrado/proceso-admision#anclamodalidades" target="_blank" class="btn-nav highlight">📝 Modalidades de Admisión</a>
         <a href="https://aspirantes.uniandes.edu.co/es/eventos/programate-con-tu-programa" target="_blank" class="btn-nav">🏫 Prográmate</a>
     </nav>
@@ -128,10 +113,13 @@
         <div class="modal-body">
             <span class="close-btn" onclick="closeModal('modalCarrera')">&times;</span>
             <h2 id="title" style="color: var(--uniandes-blue); margin: 0 0 20px 0; font-size: 2rem;"></h2>
+            
             <span class="info-tag">Descripción</span>
             <p id="desc" class="info-val"></p>
+            
             <span class="info-tag">Enfoque Académico</span>
             <p id="enfoque" class="info-val"></p>
+            
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div>
                     <span class="info-tag">Duración</span>
@@ -142,46 +130,43 @@
                     <p id="puntaje" class="info-val"></p>
                 </div>
             </div>
+            
             <span class="info-tag">Valor Semestre (2024)</span>
             <p id="precio" class="price"></p>
+
             <div id="section-becas" class="becas-box" style="display:none;">
                 <span class="info-tag" style="color: #856404;">Opciones de Apoyo Financiero</span>
                 <p id="becas" style="margin: 5px 0 0 0; font-size: 0.95rem;"></p>
             </div>
+
+            <div id="section-faq" class="faq-box" style="display:none;">
+                <span class="info-tag" style="color: #0056b3;">Preguntas Frecuentes</span>
+                <p id="faq" style="margin: 5px 0 0 0; font-size: 0.95rem;"></p>
+            </div>
+
             <a id="linkPensum" href="#" target="_blank" class="btn-contacto">Ver Pensum</a>
         </div>
     </div>
 
-   <div id="modalBecasInfo" class="modal">
+    <div id="modalBecasInfo" class="modal">
         <div class="modal-body">
             <span class="close-btn" onclick="closeModal('modalBecasInfo')">&times;</span>
-            <h2 style="color: var(--uniandes-blue); margin-bottom: 20px;">Tipos de Becas en Uniandes</h2>
-            
+            <h2 style="color: var(--uniandes-blue); margin-bottom: 20px;">Tipos de Becas</h2>
             <div class="beca-tipo-card socio">
-                <h3 style="margin-top: 0; color: #0056b3;">📍 Becas Socioeconómicas</h3>
-                <p style="font-size: 0.9rem;">Dirigidas a estudiantes de <b>bajos recursos</b> (estratos 1, 2 y 3) con excelente desempeño académico.</p>
+                <h3 style="margin-top: 0; color: #0056b3;">📍 Socioeconómicas</h3>
                 <ul style="font-size: 0.85rem;">
-                    <li><b>Quiero Estudiar:</b> Cubre hasta el 95% de la matrícula.</li>
-                    <li><b>Quiero Enseñar:</b> 95% matrícula (Licenciaturas).</li>
-                    <li><b>Pa'lante:</b> Apoyos regionales específicos. Cubre hasta el 98%.</li>
-                    <li><b>Preferente:</b> Para ciertos programas cubre del 5% al 50% del valor.</li>
-                    <li><b>Yerly:</b> Estudiantes de Matemáticas con excelencia académica. No es 100%.</li>
-                    <li><b>Préstamo Progresandes:</b> Financia hasta 75%.</li>
+                    <li>Quiero Estudiar (Hasta 95%)</li>
+                    <li>Quiero Enseñar (95% Licenciaturas)</li>
+                    <li>Pa'lante (Hasta 98%)</li>
                 </ul>
             </div>
-
             <div class="beca-tipo-card merito">
-                <h3 style="margin-top: 0; color: #2e7d32;">🏆 Becas de Excelencia / Mérito</h3>
-                <p style="font-size: 0.9rem;">Se otorgan por <b>mérito puro o vocación</b>. No requieren demostrar necesidad económica.</p>
+                <h3 style="margin-top: 0; color: #2e7d32;">🏆 Excelencia / Mérito</h3>
                 <ul style="font-size: 0.85rem;">
-                    <li><b>Decidí Enseñar:</b> 66% de la matrícula (Licenciaturas).</li>
-                    <li><b>Premios de Facultad:</b> Por promedios destacados durante la carrera.</li>
-                    <li><b>Descuento Hermanos</b></li>
-                    <li><b>Estudiantes Hijos de Empleados:</b> Exoneración total o parcial para hijos de profesores y empleados a tiempo completo.</li>
+                    <li>Decidí Enseñar (66% Licenciaturas)</li>
+                    <li>Hijos de Empleados</li>
                 </ul>
             </div>
-            
-            <p style="font-size: 0.8rem; color: #666; text-align: center;">*Para todas las becas es requisito ser admitido primero a la Universidad.</p>
         </div>
     </div>
 
@@ -231,15 +216,25 @@
             document.getElementById('title').innerText = c.titulo;
             document.getElementById('desc').innerText = c.descripcion;
             document.getElementById('enfoque').innerText = c.enfoque;
-            document.getElementById('semestres').innerText = c.titulo.includes("Dirigidos") ? "Máximo 2 Semestres" : c.semestres + " Semestres";
+            document.getElementById('semestres').innerText = c.titulo.includes("Dirigidos") ? "Máximo 2 Semestres" : (c.semestres || '8') + " Semestres";
             document.getElementById('puntaje').innerText = c.puntaje || 'Variable';
             document.getElementById('precio').innerText = formatMoney(c.precio);
             document.getElementById('linkPensum').href = c.link_contacto || "#"; 
+            
+            // Lógica para Becas
             const bBox = document.getElementById('section-becas');
             if(c.becas) {
                 document.getElementById('becas').innerText = c.becas;
                 bBox.style.display = 'block';
             } else { bBox.style.display = 'none'; }
+
+            // Lógica para Preguntas Frecuentes (Muestra si la celda tiene contenido)
+            const fBox = document.getElementById('section-faq');
+            if(c.preguntas_frecuentes) {
+                document.getElementById('faq').innerText = c.preguntas_frecuentes;
+                fBox.style.display = 'block';
+            } else { fBox.style.display = 'none'; }
+
             document.getElementById('modalCarrera').style.display = 'block';
         }
 
